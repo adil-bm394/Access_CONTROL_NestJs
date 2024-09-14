@@ -16,5 +16,7 @@ export const messages = {
   DELETE_NOT_ALLOWED: 'You are not allowed to Delete this user',
   UPDATE_NOT_ALLOWED: 'You are not allowed to Update this user',
   ACCESS_NOT_ALLOWED: 'You are not allowed to Access this user',
-  ROLE_NOT_FOUND:'Role Id id not Exist',
+  ROLE_NOT_FOUND: 'Role Id id not Exist',
+  PERMISSION_DENIED:
+    'You have not permission to access the user data |Only Admin ',
 };

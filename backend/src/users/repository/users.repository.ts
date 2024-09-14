@@ -23,15 +23,11 @@ export class UserRepository extends Repository<User> {
      return this.save(user);
   }
 
-//   async findAllUsers(): Promise<User[]> {
-//     return this.find();
-//   }
+  async findAllUsers(): Promise<User[]> {
+    return this.createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .where('role.role_name = :roleName', { roleName: 'USER' }) 
+      .getMany();
+  }
+  }
 
-//   async updateUser(id: number, updateDto: UpdateDto): Promise<void> {
-//     await this.update(id, updateDto);
-//   }
-
-//   async softDeleteUser(id: number): Promise<void> {
-//     await this.update(id, { deletedAt: new Date() });
-//   }
-}

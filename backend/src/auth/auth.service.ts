@@ -82,7 +82,6 @@ export class AuthService {
     }
   }
 
- 
   //LOGIN SERVICE
   async login(
     userData: LoginDto,
@@ -107,8 +106,11 @@ export class AuthService {
           message: messages.INVALID_CREDENTIAL,
         };
       }
-
-      const token = this.jwtService.sign({ id: user.id });
+      
+      const token = this.jwtService.sign({
+        id: user.id,
+        role: user.role.role_name,
+      });
 
       return {
         status: statusCodes.OK,
@@ -119,6 +121,7 @@ export class AuthService {
           username: user.username,
           email: user.email,
           token,
+          role: user.role.role_name,
         },
       };
     } catch (error) {
