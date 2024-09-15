@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   BaseResponse,
   ErrorResponse,
+  UserResponse,
   UsersListResponse,
 } from '../utils/interfaces/types';
 import { statusCodes } from '../utils/statusCodes/statusCodes';
@@ -33,6 +34,39 @@ export class UsersService {
       };
     } catch (error) {
       console.log(`[Users.Service] Error in fetching All Users: ${error}`);
+      return {
+        status: statusCodes.INTERNAL_SERVER_ERROR,
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
+  }
+
+  // GET USER BY ID
+  async findOne(
+    id: number,
+  ): Promise<UserResponse | BaseResponse | ErrorResponse> {
+    try {
+      const user = await this.userRepository.findById(id);
+
+      if (!user) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: messages.USER_NOT_FOUND,
+        };
+      }
+
+      user.password = undefined;
+      return {
+        status: statusCodes.OK,
+        success: true,
+        message: messages.USER_FETCHED,
+        user: user,
+      };
+    } catch (error) {
+      console.error(`[Users.Service] Error in fetching Users BY ID: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,

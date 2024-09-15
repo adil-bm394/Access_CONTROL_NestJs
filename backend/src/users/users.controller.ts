@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import {
   BaseResponse,
   ErrorResponse,
+  UserResponse,
   UsersListResponse,
 } from 'src/utils/interfaces/types';
 import { RolesGuard } from 'src/auth/guards/role.guard';
@@ -19,6 +20,15 @@ export class UsersController {
   @Roles('ADMIN')
   findAll(): Promise<BaseResponse | UsersListResponse | ErrorResponse> {
     return this.usersService.findAll();
+  }
+
+  // GET USER BY ID - Admin only
+  @Get(':id')
+  @Roles('ADMIN') 
+  findOne(
+    @Param('id') id: number,
+  ): Promise<BaseResponse | UserResponse | ErrorResponse> {
+    return this.usersService.findOne(id);
   }
 
   // DEACTIVATE USER - Admin only
