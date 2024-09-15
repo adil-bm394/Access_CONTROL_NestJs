@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { messages } from '../utils/messages/messages';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -23,8 +21,6 @@ export class UsersService {
     try {
       const users = await this.userRepository.findAllUsers();
 
-      //console.log('User.Service] Users:',users);
-
       users.forEach((user) => {
         user.password = undefined;
       });
@@ -37,6 +33,68 @@ export class UsersService {
       };
     } catch (error) {
       console.log(`[Users.Service] Error in fetching All Users: ${error}`);
+      return {
+        status: statusCodes.INTERNAL_SERVER_ERROR,
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
+  }
+
+  //DEACTIVATE THE USER - Admin only
+  async deactivateUser(userId: number): Promise<BaseResponse | ErrorResponse> {
+    try {
+      const user = await this.userRepository.findById(userId);
+      if (!user) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: messages.USER_NOT_FOUND,
+        };
+      }
+
+      user.status = 'inactive';
+      await this.userRepository.save(user);
+
+      return {
+        status: statusCodes.OK,
+        success: true,
+        message: messages.USER_DEACTIVATED,
+      };
+    } catch (error) {
+      console.log(`[Users.Service] Error in deactivating user: ${error}`);
+      return {
+        status: statusCodes.INTERNAL_SERVER_ERROR,
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
+  }
+
+  //ACTIVATE THE USER - Admin only
+  async activateUser(userId: number): Promise<BaseResponse | ErrorResponse> {
+    try {
+      const user = await this.userRepository.findById(userId);
+      if (!user) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: messages.USER_NOT_FOUND,
+        };
+      }
+
+      user.status = 'active';
+      await this.userRepository.save(user);
+
+      return {
+        status: statusCodes.OK,
+        success: true,
+        message: messages.USER_ACTIVATED,
+      };
+    } catch (error) {
+      console.log(`[Users.Service] Error in activating user: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,

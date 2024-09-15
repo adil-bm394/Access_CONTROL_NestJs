@@ -19,4 +19,7 @@ export const messages = {
   ROLE_NOT_FOUND: 'Role Id id not Exist',
   PERMISSION_DENIED:
     'You have not permission to access the user data |Only Admin ',
+  USER_DEACTIVATED: 'User has been deactivated successfully.',
+  ACCOUNT_DEACTIVATED: 'Your account is deactivated',
+  USER_ACTIVATED: 'User has been activated successfully.',
 };

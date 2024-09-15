@@ -98,6 +98,14 @@ export class AuthService {
         };
       }
 
+      if (user.status === 'inactive') {
+        return {
+          status: statusCodes.UNAUTHORIZED,
+          success: false,
+          message: messages.ACCOUNT_DEACTIVATED,
+        };
+      }
+
       const isMatchedPassword = await bcrypt.compare(password, user.password);
       if (!isMatchedPassword) {
         return {
@@ -106,7 +114,7 @@ export class AuthService {
           message: messages.INVALID_CREDENTIAL,
         };
       }
-      
+
       const token = this.jwtService.sign({
         id: user.id,
         role: user.role.role_name,
