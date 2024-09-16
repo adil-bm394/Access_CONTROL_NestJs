@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Param, Req, UseGuards, Patch } from '@nestjs/common';
+import { Controller, Get, Body, Param, Req, UseGuards, Patch, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   BaseResponse,
@@ -9,43 +9,11 @@ import {
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Roles } from 'src/utils/decorator/roles.decorator';
+import { SignupDto } from 'src/auth/dto/signup.dto';
 
 @Controller('users')
 @UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  //GET ALL USER - Admin only
-  @Get()
-  @Roles('ADMIN')
-  findAll(): Promise<BaseResponse | UsersListResponse | ErrorResponse> {
-    return this.usersService.findAll();
-  }
-
-  // GET USER BY ID - Admin only
-  @Get(':id')
-  @Roles('ADMIN') 
-  findOne(
-    @Param('id') id: number,
-  ): Promise<BaseResponse | UserResponse | ErrorResponse> {
-    return this.usersService.findOne(id);
-  }
-
-  // DEACTIVATE USER - Admin only
-  @Patch('deactivate/:id')
-  @Roles('ADMIN') // This ensures only admins can deactivate users
-  deactivateUser(
-    @Param('id') userId: number,
-  ): Promise<BaseResponse | ErrorResponse> {
-    return this.usersService.deactivateUser(userId);
-  }
-
-  // ACTIVATE USER - Admin only
-  @Patch('activate/:id')
-  @Roles('ADMIN') // This ensures only admins can deactivate users
-  activateUser(
-    @Param('id') userId: number,
-  ): Promise<BaseResponse | ErrorResponse> {
-    return this.usersService.activateUser(userId);
-  }
 }

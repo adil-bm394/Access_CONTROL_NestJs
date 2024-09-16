@@ -11,9 +11,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { statusCodes } from '../utils/statusCodes/statusCodes';
 import { UserRepository } from 'src/users/repository/users.repository';
-import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { RoleRepository } from 'src/users/repository/role.repository';
+import { SignupDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,8 +25,65 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  //CREATE USER | Admin
-  async create(
+  // CREATE ADMIN
+  async createAdmin(
+    userData: SignupDto,
+    roleId: number,
+  ): Promise<UserResponse | BaseResponse | ErrorResponse> {
+    try {
+      const { email, password } = userData;
+
+      const existingUser = await this.userRepository.findByEmail(email);
+
+      if (existingUser) {
+        return {
+          status: statusCodes.BAD_REQUEST,
+          success: false,
+          message: messages.USER_ALREADY_EXIST,
+        };
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const role = await this.roleRepository.getRoleById(roleId);
+      if (!role) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: messages.ROLE_NOT_FOUND,
+        };
+      }
+
+      const savedUser = await this.userRepository.createUser(
+        {
+          ...userData,
+          password: hashedPassword,
+        },
+        role,
+      );
+      savedUser.password = undefined;
+
+      return {
+        status: statusCodes.CREATED,
+        success: true,
+        message: messages.USER_CREATED,
+        user: savedUser,
+      };
+    } catch (error) {
+      console.log(
+        `[Auth.Service] Error creating user: ${error.message} || ${error}`,
+      );
+      return {
+        status: statusCodes.INTERNAL_SERVER_ERROR,
+        success: false,
+        message: messages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
+  }
+
+ // CREATE USER
+  async createUser(
     userData: SignupDto,
     roleId: number,
   ): Promise<UserResponse | BaseResponse | ErrorResponse> {
