@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from 'src/users/repository/users.repository';
-import { RoleRepository } from 'src/users/repository/role.repository';
+import { UserRepository } from './repository/users.repository';
+import { RoleRepository } from './repository/role.repository';
 import {
   UserResponse,
   BaseResponse,
@@ -36,7 +36,7 @@ export class AdminService {
         users,
       };
     } catch (error) {
-      console.log(`[Users.Service] Error in fetching All Users: ${error}`);
+      console.log(`[Admin.Service] Error in fetching All Users: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
@@ -69,7 +69,7 @@ export class AdminService {
         user: user,
       };
     } catch (error) {
-      console.error(`[Users.Service] Error in fetching Users BY ID: ${error}`);
+      console.log(`[Admin.Service] Error in fetching Users BY ID: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
@@ -100,7 +100,7 @@ export class AdminService {
         message: successMessages.USER_DEACTIVATED,
       };
     } catch (error) {
-      console.log(`[Users.Service] Error in deactivating user: ${error}`);
+      console.log(`[Admin.Service] Error in deactivating user: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
@@ -131,7 +131,7 @@ export class AdminService {
         message: successMessages.USER_ACTIVATED,
       };
     } catch (error) {
-      console.log(`[Users.Service] Error in activating user: ${error}`);
+      console.log(`[Admin.Service] Error in activating user: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,

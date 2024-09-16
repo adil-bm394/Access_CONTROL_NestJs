@@ -9,6 +9,7 @@ import {
 import { Roles } from 'src/utils/decorator/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
+import { RolesEnum } from '../utils/enums/roles.enum';
 
 @Controller('admin')
 @UseGuards(AuthGuard, RolesGuard)
@@ -17,14 +18,14 @@ export class AdminController {
 
   //GET ALL USER - Admin only
   @Get('/getAllUser')
-  @Roles('ADMIN')
+  @Roles(RolesEnum.Admin)
   findAll(): Promise<BaseResponse | UsersListResponse | ErrorResponse> {
     return this.adminService.findAll();
   }
 
   //GET USER BY ID - Admin only
   @Get(':id')
-  @Roles('ADMIN')
+  @Roles(RolesEnum.Admin)
   findOne(
     @Param('id') id: number,
   ): Promise<BaseResponse | UserResponse | ErrorResponse> {
@@ -33,7 +34,7 @@ export class AdminController {
 
   // DEACTIVATE USER - Admin only
   @Patch('deactivate/:id')
-  @Roles('ADMIN') // This ensures only admins can deactivate users
+  @Roles(RolesEnum.Admin) 
   deactivateUser(
     @Param('id') userId: number,
   ): Promise<BaseResponse | ErrorResponse> {
@@ -42,7 +43,7 @@ export class AdminController {
 
   // ACTIVATE USER - Admin only
   @Patch('activate/:id')
-  @Roles('ADMIN') 
+  @Roles(RolesEnum.Admin)
   activateUser(
     @Param('id') userId: number,
   ): Promise<BaseResponse | ErrorResponse> {

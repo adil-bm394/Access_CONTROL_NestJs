@@ -53,7 +53,7 @@ export class UsersService {
         user: user,
       };
     } catch (error) {
-      console.error(`[Users.Service] Error in fetching Users BY ID: ${error}`);
+      console.log(`[Users.Service] Error in fetching Users BY ID: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
@@ -99,7 +99,7 @@ export class UsersService {
         user: updatedUser,
       };
     } catch (error) {
-      console.error(`[Users.Service] Error in Updating Users: ${error}`);
+      console.log(`[Users.Service] Error in Updating Users: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
@@ -139,7 +139,7 @@ export class UsersService {
         message: successMessages.USER_DELETED,
       };
     } catch (error) {
-      console.error(`[Users.Service] Error in Soft Delete Users: ${error}`);
+      console.log(`[Users.Service] Error in Soft Delete Users: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,

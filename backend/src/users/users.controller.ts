@@ -8,8 +8,6 @@ import {
 } from 'src/utils/interfaces/types';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { Roles } from 'src/utils/decorator/roles.decorator';
-import { SignupDto } from 'src/auth/dto/signup.dto';
 import { UpdateDto } from './dto/update.dto';
 
 @Controller('users')
