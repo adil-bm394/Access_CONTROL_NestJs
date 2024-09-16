@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { SignupDto } from 'src/auth/dto/signup.dto';
 import { Role } from '../entities/role.entity';
+import { UpdateDto } from '../dto/update.dto';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -18,16 +19,24 @@ export class UserRepository extends Repository<User> {
     return this.findOne({ where: { id } });
   }
 
-  async createUser(userData: SignupDto,role:Role): Promise<User> {
+  async createUser(userData: SignupDto, role: Role): Promise<User> {
     const user = this.create({ ...userData, role });
-     return this.save(user);
+    return this.save(user);
   }
 
   async findAllUsers(): Promise<User[]> {
     return this.createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
-      .where('role.role_name = :roleName', { roleName: 'USER' }) 
+      .where('role.role_name = :roleName', { roleName: 'USER' })
       .getMany();
   }
+
+  async updateUser(id: number, updatedData: UpdateDto): Promise<void> {
+    await this.update(id, updatedData);
   }
+
+  async softDeleteUser(id: number): Promise<void> {
+    await this.update(id, { deletedAt: new Date() });
+  }
+}
 

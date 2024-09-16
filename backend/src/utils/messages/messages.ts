@@ -10,6 +10,7 @@ export const messages = {
   USER_CREATED: 'Successfully User created.',
   USER_FETCHED: 'User successfully fetched.',
   USER_UPDATED: 'User successfully updated.',
+  USER_DELETED: 'User successfully deleted.',
   TOKEN_MISSING: 'Token is missing',
   INVALID_TOKEN: 'Invalid Token',
   UPDATE_NOT_ALLOWED: 'You are not allowed to Update this user',
@@ -19,4 +20,5 @@ export const messages = {
   USER_DEACTIVATED: 'User has been deactivated successfully.',
   ACCOUNT_DEACTIVATED: 'Your account is deactivated',
   USER_ACTIVATED: 'User has been activated successfully.',
+  DELETE_NOT_ALLOWED: 'You are not allowed to Delete this user',
 };

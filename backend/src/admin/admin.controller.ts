@@ -42,7 +42,7 @@ export class AdminController {
 
   // ACTIVATE USER - Admin only
   @Patch('activate/:id')
-  @Roles('ADMIN') // This ensures only admins can deactivate users
+  @Roles('ADMIN') 
   activateUser(
     @Param('id') userId: number,
   ): Promise<BaseResponse | ErrorResponse> {

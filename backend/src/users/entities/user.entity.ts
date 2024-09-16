@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './role.entity';
 
 
@@ -24,4 +24,7 @@ export class User {
 
   @Column({ type: 'enum', enum: ['active', 'inactive'], default: 'active' })
   status: string;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }
