@@ -4,7 +4,6 @@ import {
   BaseResponse,
   ErrorResponse,
   UserResponse,
-  UsersListResponse,
 } from 'src/utils/interfaces/types';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';

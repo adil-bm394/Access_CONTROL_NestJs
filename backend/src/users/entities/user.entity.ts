@@ -19,7 +19,7 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: false })
   address: string;
 
-  @ManyToOne(() => Role, (role) => role.id, { eager: true }) // Eager loading can be used here if appropriate
+  @ManyToOne(() => Role, (role) => role.id, { eager: true }) 
   role: Role;
 
   @Column({ type: 'enum', enum: ['active', 'inactive'], default: 'active' })

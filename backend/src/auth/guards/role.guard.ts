@@ -19,7 +19,7 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
 
     if (!user || !user.role) {
-      throw new ForbiddenException('User role is missing or invalid');
+      throw new ForbiddenException(errorMessages.ROLE_MISSING);
     }
     if (!roles.includes(user.role)) {
       throw new ForbiddenException(errorMessages.PERMISSION_DENIED);

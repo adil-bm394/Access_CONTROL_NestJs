@@ -24,4 +24,5 @@ export const errorMessages = {
   PERMISSION_DENIED: 'Permission denied! Only admin can access this route',
   ACCOUNT_DEACTIVATED: 'Your account is deactivated',
   DELETE_NOT_ALLOWED: 'You are not allowed to Delete this user',
+  ROLE_MISSING: 'User role is missing or invalid',
 };
