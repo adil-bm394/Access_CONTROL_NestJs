@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from 'src/users/repository/users.repository';
 import { RoleRepository } from 'src/users/repository/role.repository';
-import { SignupDto } from '../auth/dto/signup.dto';
 import {
   UserResponse,
   BaseResponse,
@@ -11,7 +9,7 @@ import {
   UsersListResponse,
 } from '../utils/interfaces/types';
 import { statusCodes } from '../utils/statusCodes/statusCodes';
-import { messages } from '../utils/messages/messages';
+import { errorMessages, successMessages } from '../utils/messages/messages';
 
 @Injectable()
 export class AdminService {
@@ -34,7 +32,7 @@ export class AdminService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_FETCHED,
+        message: successMessages.USER_FETCHED,
         users,
       };
     } catch (error) {
@@ -42,7 +40,7 @@ export class AdminService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -59,7 +57,7 @@ export class AdminService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -67,7 +65,7 @@ export class AdminService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_FETCHED,
+        message: successMessages.USER_FETCHED,
         user: user,
       };
     } catch (error) {
@@ -75,7 +73,7 @@ export class AdminService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -89,7 +87,7 @@ export class AdminService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -99,14 +97,14 @@ export class AdminService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_DEACTIVATED,
+        message: successMessages.USER_DEACTIVATED,
       };
     } catch (error) {
       console.log(`[Users.Service] Error in deactivating user: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -120,7 +118,7 @@ export class AdminService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -130,14 +128,14 @@ export class AdminService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_ACTIVATED,
+        message: successMessages.USER_ACTIVATED,
       };
     } catch (error) {
       console.log(`[Users.Service] Error in activating user: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }

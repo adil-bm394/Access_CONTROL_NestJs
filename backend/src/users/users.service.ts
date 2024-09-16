@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { messages } from '../utils/messages/messages';
+import { errorMessages, successMessages } from '../utils/messages/messages';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import {
@@ -33,7 +33,7 @@ export class UsersService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -41,7 +41,7 @@ export class UsersService {
         return {
           status: statusCodes.UNAUTHORIZED,
           success: false,
-          message: messages.ACCESS_NOT_ALLOWED,
+          message: errorMessages.ACCESS_NOT_ALLOWED,
         };
       }
 
@@ -49,7 +49,7 @@ export class UsersService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_FETCHED,
+        message: successMessages.USER_FETCHED,
         user: user,
       };
     } catch (error) {
@@ -57,7 +57,7 @@ export class UsersService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -76,7 +76,7 @@ export class UsersService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -84,7 +84,7 @@ export class UsersService {
         return {
           status: statusCodes.UNAUTHORIZED,
           success: false,
-          message: messages.UPDATE_NOT_ALLOWED,
+          message: errorMessages.UPDATE_NOT_ALLOWED,
         };
       }
 
@@ -95,7 +95,7 @@ export class UsersService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_UPDATED,
+        message: successMessages.USER_UPDATED,
         user: updatedUser,
       };
     } catch (error) {
@@ -103,7 +103,7 @@ export class UsersService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -120,7 +120,7 @@ export class UsersService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -128,7 +128,7 @@ export class UsersService {
         return {
           status: statusCodes.UNAUTHORIZED,
           success: false,
-          message: messages.DELETE_NOT_ALLOWED,
+          message: errorMessages.DELETE_NOT_ALLOWED,
         };
       }
 
@@ -136,14 +136,14 @@ export class UsersService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_DELETED,
+        message: successMessages.USER_DELETED,
       };
     } catch (error) {
       console.error(`[Users.Service] Error in Soft Delete Users: ${error}`);
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { messages } from '../utils/messages/messages';
+import { errorMessages, successMessages } from '../utils/messages/messages';
 import {
   BaseResponse,
   ErrorResponse,
@@ -39,7 +39,7 @@ export class AuthService {
         return {
           status: statusCodes.BAD_REQUEST,
           success: false,
-          message: messages.USER_ALREADY_EXIST,
+          message: errorMessages.USER_ALREADY_EXIST,
         };
       }
 
@@ -50,7 +50,7 @@ export class AuthService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.ROLE_NOT_FOUND,
+          message: errorMessages.ROLE_NOT_FOUND,
         };
       }
 
@@ -66,7 +66,7 @@ export class AuthService {
       return {
         status: statusCodes.CREATED,
         success: true,
-        message: messages.USER_CREATED,
+        message: successMessages.USER_CREATED,
         user: savedUser,
       };
     } catch (error) {
@@ -76,7 +76,7 @@ export class AuthService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -96,7 +96,7 @@ export class AuthService {
         return {
           status: statusCodes.BAD_REQUEST,
           success: false,
-          message: messages.USER_ALREADY_EXIST,
+          message: errorMessages.USER_ALREADY_EXIST,
         };
       }
 
@@ -107,7 +107,7 @@ export class AuthService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.ROLE_NOT_FOUND,
+          message: errorMessages.ROLE_NOT_FOUND,
         };
       }
 
@@ -123,7 +123,7 @@ export class AuthService {
       return {
         status: statusCodes.CREATED,
         success: true,
-        message: messages.USER_CREATED,
+        message: successMessages.USER_CREATED,
         user: savedUser,
       };
     } catch (error) {
@@ -133,7 +133,7 @@ export class AuthService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
@@ -151,7 +151,7 @@ export class AuthService {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
-          message: messages.USER_NOT_FOUND,
+          message: errorMessages.USER_NOT_FOUND,
         };
       }
 
@@ -159,7 +159,7 @@ export class AuthService {
         return {
           status: statusCodes.UNAUTHORIZED,
           success: false,
-          message: messages.ACCOUNT_DEACTIVATED,
+          message: errorMessages.ACCOUNT_DEACTIVATED,
         };
       }
 
@@ -168,7 +168,7 @@ export class AuthService {
         return {
           status: statusCodes.UNAUTHORIZED,
           success: false,
-          message: messages.INVALID_CREDENTIAL,
+          message: errorMessages.INVALID_CREDENTIAL,
         };
       }
 
@@ -180,7 +180,7 @@ export class AuthService {
       return {
         status: statusCodes.OK,
         success: true,
-        message: messages.USER_LOGIN,
+        message: successMessages.USER_LOGIN,
         user: {
           id: user.id,
           username: user.username,
@@ -194,7 +194,7 @@ export class AuthService {
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
-        message: messages.INTERNAL_SERVER_ERROR,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
     }
