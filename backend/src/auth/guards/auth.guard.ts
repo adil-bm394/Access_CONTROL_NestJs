@@ -1,8 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { messages } from 'src/utils/messages/messages';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,17 +19,15 @@ export class AuthGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.split(' ')[1];
 
-    //console.log(token, 'token');
-    if (!token) return false;
+   if (!token) throw new ForbiddenException(messages.TOKEN_MISSING);
 
     try {
       const payload = this.jwtService.verify(token, { secret: JWT_SECRET });
-      //console.log(`Token Payload: ${JSON.stringify(payload)}`); 
       request.user = payload;
       return true;
     } catch (error) {
       console.error('[Auth.guard]Token verification error:', error.message);
-      return false;
+      throw new ForbiddenException(messages.INVALID_TOKEN);
     }
   }
 }
