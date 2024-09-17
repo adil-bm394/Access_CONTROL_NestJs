@@ -113,8 +113,8 @@ describe('UsersService', () => {
      mockUserRepository.findById.mockResolvedValue(user);
 
      const updatedData: UpdateDto = {
-       username: 'Updated Name',
-       address: 'updatedAddress',
+       username: 'Mohd Adil',
+       address: 'Azamgarh',
      };
      const result = await service.update(1, updatedData, 1);
 
@@ -129,10 +129,9 @@ describe('UsersService', () => {
    it('should return NOT_FOUND error if user does not exist', async () => {
      mockUserRepository.findById.mockResolvedValue(null);
 
-     // Provide a valid UpdateDto object here
      const updatedData: UpdateDto = {
-       username: 'Any Name',
-       address: 'Any Address',
+       username: 'Adil',
+       address: 'Delhi',
      };
      const result = await service.update(1, updatedData, 1);
 
@@ -149,10 +148,9 @@ describe('UsersService', () => {
 
      mockUserRepository.findById.mockResolvedValue(user);
 
-     // Provide a valid UpdateDto object here
      const updatedData: UpdateDto = {
-       username: 'Any Name',
-       address: 'Any Address',
+       username: 'Adil',
+       address: 'Delhi',
      };
      const result = await service.update(1, updatedData, 2);
 
@@ -166,10 +164,9 @@ describe('UsersService', () => {
    it('should return INTERNAL_SERVER_ERROR if an exception occurs', async () => {
      mockUserRepository.findById.mockRejectedValue(new Error('Database error'));
 
-     // Provide a valid UpdateDto object here
      const updatedData: UpdateDto = {
-       username: 'Any Name',
-       address: 'Any Address',
+       username: 'faheem',
+       address: 'Azamgarh',
      };
      const result = await service.update(1, updatedData, 1);
 

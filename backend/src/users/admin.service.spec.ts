@@ -40,15 +40,15 @@ describe('AdminService', () => {
       const mockUsers = [
         {
           id: 1,
-          email: 'user1@example.com',
-          password: 'password1',
+          email: 'adil@binmile.com',
+          password: '123456',
           status: 'active',
           role: new Role(),
         },
         {
           id: 2,
-          email: 'user2@example.com',
-          password: 'password2',
+          email: 'faheem@binmile.com',
+          password: '123456',
           status: 'active',
           role: new Role(),
         },
@@ -84,8 +84,8 @@ describe('AdminService', () => {
     it('should return a user by id', async () => {
       const mockUser = {
         id: 1,
-        email: 'user@example.com',
-        password: 'password',
+        email: 'adil@binmile.com',
+        password: '123456',
         status: 'active',
         role: new Role(),
       };
