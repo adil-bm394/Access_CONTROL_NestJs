@@ -146,7 +146,6 @@ export class AuthService {
           username: user.username,
           email: user.email,
           accessToken,
-          refreshToken,
           role: user.role.role_name,
         },
       };
