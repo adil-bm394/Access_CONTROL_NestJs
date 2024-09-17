@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import {  ConfigService } from '@nestjs/config';
+import {  ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRepository } from '../users/repository/users.repository';
 import { RoleRepository } from 'src/users/repository/role.repository';
 
@@ -11,10 +11,13 @@ import { RoleRepository } from 'src/users/repository/role.repository';
   imports: [
     forwardRef(() => UsersModule),
     JwtModule.registerAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: config.get<string | number>('JWT_EXPIRY') },
+        signOptions: {
+          expiresIn: config.get<string | number>('JWT_EXPIRY'),
+        },
       }),
     }),
   ],
