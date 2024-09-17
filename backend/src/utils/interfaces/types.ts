@@ -22,8 +22,19 @@ export interface LoginUserResponse extends BaseResponse {
     id: number;
     username: string;
     email: string;
-    token?: string;
-    role:string;
+    accessToken:string;
+    refreshToken:string;
+    role: string;
+  };
+}
+
+export interface GenerateTokenResponse extends BaseResponse {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    accessToken: string;
+    role: string;
   };
 }
 

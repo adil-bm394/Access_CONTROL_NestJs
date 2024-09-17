@@ -5,6 +5,7 @@ import { errorMessages, successMessages } from '../utils/messages/messages';
 import {
   BaseResponse,
   ErrorResponse,
+  GenerateTokenResponse,
   LoginUserResponse,
   UserResponse,
 } from '../utils/interfaces/types';
@@ -14,6 +15,7 @@ import { UserRepository } from 'src/users/repository/users.repository';
 import { LoginDto } from './dto/login.dto';
 import { RoleRepository } from 'src/users/repository/role.repository';
 import { SignupDto } from './dto/signup.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -23,66 +25,10 @@ export class AuthService {
     @InjectRepository(RoleRepository)
     private roleRepository: RoleRepository,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
-  // CREATE ADMIN
-  async createAdmin(
-    userData: SignupDto,
-    roleId: number,
-  ): Promise<UserResponse | BaseResponse | ErrorResponse> {
-    try {
-      const { email, password } = userData;
-
-      const existingUser = await this.userRepository.findByEmail(email);
-
-      if (existingUser) {
-        return {
-          status: statusCodes.BAD_REQUEST,
-          success: false,
-          message: errorMessages.USER_ALREADY_EXIST,
-        };
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const role = await this.roleRepository.getRoleById(roleId);
-      if (!role) {
-        return {
-          status: statusCodes.NOT_FOUND,
-          success: false,
-          message: errorMessages.ROLE_NOT_FOUND,
-        };
-      }
-
-      const savedUser = await this.userRepository.createUser(
-        {
-          ...userData,
-          password: hashedPassword,
-        },
-        role,
-      );
-      savedUser.password = undefined;
-
-      return {
-        status: statusCodes.CREATED,
-        success: true,
-        message: successMessages.USER_CREATED,
-        user: savedUser,
-      };
-    } catch (error) {
-      console.log(
-        `[Auth.Service] Error creating user: ${error.message} || ${error}`,
-      );
-      return {
-        status: statusCodes.INTERNAL_SERVER_ERROR,
-        success: false,
-        message: errorMessages.INTERNAL_SERVER_ERROR,
-        error: error.message,
-      };
-    }
-  }
-
-  // CREATE USER
+  //CREATE USER
   async createUser(
     userData: SignupDto,
     roleId: number,
@@ -139,13 +85,12 @@ export class AuthService {
     }
   }
 
-  //LOGIN SERVICE
+  // LOGIN USER
   async login(
     userData: LoginDto,
   ): Promise<BaseResponse | LoginUserResponse | ErrorResponse> {
     try {
       const { email, password } = userData;
-
       const user = await this.userRepository.findByEmail(email);
       if (!user) {
         return {
@@ -172,10 +117,25 @@ export class AuthService {
         };
       }
 
-      const token = this.jwtService.sign({
-        id: user.id,
-        role: user.role.role_name,
-      });
+      const accessToken = this.generateAccessToken(
+        user.id,
+        user.role.role_name,
+      );
+
+      const refreshToken = this.generateRefreshToken(user.id);
+
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+      const JWT_REFRESH_EXPIRY =
+        +this.configService.get<number>('JWT_REFRESH_EXPIRY');
+
+      const refreshTokenExpiresAt = new Date(Date.now() + JWT_REFRESH_EXPIRY);
+
+      await this.userRepository.saveRefreshToken(
+        user.id,
+        hashedRefreshToken,
+        refreshTokenExpiresAt,
+      );
 
       return {
         status: statusCodes.OK,
@@ -185,12 +145,65 @@ export class AuthService {
           id: user.id,
           username: user.username,
           email: user.email,
-          token,
+          accessToken,
+          refreshToken,
           role: user.role.role_name,
         },
       };
     } catch (error) {
       console.log(`[Auth.Service] Error during login: ${error}`);
+      return {
+        status: 500,
+        success: false,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
+  }
+
+  //  GENERATE  REFRESH TOKEN SERVICES
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<BaseResponse | GenerateTokenResponse | ErrorResponse> {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+
+      const user = await this.userRepository.findById(payload.id);
+      const isRefreshTokenMatched = await bcrypt.compare(
+        refreshToken,
+        user.refreshToken,
+      );
+      if (!user || !isRefreshTokenMatched) {
+        return {
+          status: statusCodes.UNAUTHORIZED,
+          success: false,
+          message: errorMessages.INVALID_REFRESH_TOKEN,
+        };
+      }
+
+      const newAccessToken = this.generateAccessToken(
+        user.id,
+        user.role.role_name,
+      );
+
+      return {
+        status: statusCodes.OK,
+        success: true,
+        message: successMessages.TOKEN_REFRESHED,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          accessToken: newAccessToken,
+          role: user.role.role_name,
+        },
+      };
+    } catch (error) {
+      console.log(
+        `[Auth.Service] Error refreshing token: ${error?.message || error}`,
+      );
       return {
         status: statusCodes.INTERNAL_SERVER_ERROR,
         success: false,
@@ -200,5 +213,25 @@ export class AuthService {
     }
   }
 
-  
+  //GENERATE ACCESS TOKEN
+  private generateAccessToken(userId: number, userRole: string): string {
+    return this.jwtService.sign(
+      { id: userId, role: userRole },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_EXPIRY'),
+      },
+    );
+  }
+
+  // GENERATE REFRESH TOKEN
+  private generateRefreshToken(userId: number): string {
+    return this.jwtService.sign(
+      { id: userId },
+      {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRY'),
+      },
+    );
+  }
 }

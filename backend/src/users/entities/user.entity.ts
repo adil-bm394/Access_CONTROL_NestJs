@@ -25,7 +25,11 @@ export class User {
   @Column({ type: 'enum', enum: ['active', 'inactive'], default: 'active' })
   status: string;
 
- 
+  @Column({ type: 'text', nullable: true })
+  refreshToken?: string; 
+
+  @Column({ type: 'timestamp', nullable: true })
+  refreshTokenExpiresAt?: Date; 
 
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;

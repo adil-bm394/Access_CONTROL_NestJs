@@ -5,10 +5,12 @@ import {
   ErrorResponse,
   BaseResponse,
   UserResponse,
+  GenerateTokenResponse,
 } from '../utils/interfaces/types';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { ConfigService } from '@nestjs/config';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,9 +24,8 @@ export class AuthController {
   async adminSignUp(
     @Body() userData: SignupDto,
   ): Promise<UserResponse | BaseResponse | ErrorResponse> {
-   const adminRoleId = +this.configService.get<number>('ADMIN');
-   //console.log('adminRoleId', adminRoleId);
-    return this.authService.createAdmin(userData, adminRoleId);
+    const adminRoleId = +this.configService.get<number>('ADMIN');
+    return this.authService.createUser(userData, adminRoleId);
   }
 
   //User SignUp
@@ -32,15 +33,22 @@ export class AuthController {
   async userSignUp(
     @Body() userData: SignupDto,
   ): Promise<UserResponse | BaseResponse | ErrorResponse> {
-     const userRoleId = +this.configService.get<number>('USER_ROLE');
-      //console.log('userRoleId', (userRoleId));
-    return this.authService.createUser(userData,userRoleId);
+    const userRoleId = +this.configService.get<number>('USER_ROLE');
+    return this.authService.createUser(userData, userRoleId);
   }
-
+  //USER LOGIN
   @Post('/login')
   async login(
     @Body() loginData: LoginDto,
   ): Promise<BaseResponse | LoginUserResponse | ErrorResponse> {
     return this.authService.login(loginData);
+  }
+
+  //REFRESH TOKEN
+  @Post('/refresh-token')
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<BaseResponse | GenerateTokenResponse | ErrorResponse> {
+    return this.authService.refreshAccessToken(refreshTokenDto.refreshToken);
   }
 }

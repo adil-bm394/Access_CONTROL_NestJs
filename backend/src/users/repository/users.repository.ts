@@ -38,5 +38,16 @@ export class UserRepository extends Repository<User> {
   async softDeleteUser(id: number): Promise<void> {
     await this.update(id, { deletedAt: new Date() });
   }
+
+  async saveRefreshToken(
+    userId: number,
+    refreshToken: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    await this.update(userId, {
+      refreshToken,
+      refreshTokenExpiresAt: expiresAt,
+    });
+  }
 }
 

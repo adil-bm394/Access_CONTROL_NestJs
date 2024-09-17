@@ -8,6 +8,7 @@ export const successMessages = {
   USER_DELETED: 'User successfully deleted.',
   USER_DEACTIVATED: 'User has been deactivated successfully.',
   USER_ACTIVATED: 'User has been activated successfully.',
+  TOKEN_REFRESHED: 'Access token refreshed successfully',
 };
 
 export const errorMessages = {
@@ -25,4 +26,5 @@ export const errorMessages = {
   ACCOUNT_DEACTIVATED: 'Your account is deactivated',
   DELETE_NOT_ALLOWED: 'You are not allowed to Delete this user',
   ROLE_MISSING: 'User role is missing or invalid',
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token or token has expired',
 };
