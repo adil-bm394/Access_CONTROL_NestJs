@@ -8,7 +8,6 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new HttpExceptionFilter());
    app.useGlobalPipes(
      new ValidationPipe({
        transform: true,
@@ -16,6 +15,7 @@ async function bootstrap() {
        forbidNonWhitelisted: true,
      }),
    );
+    app.useGlobalFilters(new HttpExceptionFilter());
    const PORT=process.env.PORT || 3000;
   await app.listen(PORT);
 }
