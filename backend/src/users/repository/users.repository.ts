@@ -25,10 +25,10 @@ export class UserRepository extends Repository<User> {
   }
 
   async findAllUsers(): Promise<User[]> {
-    return this.createQueryBuilder('user')
-      .leftJoinAndSelect('user.role', 'role')
-      .where('role.role_name = :roleName', { roleName: 'USER' })
-      .getMany();
+    return this.find({
+      relations: ['role'],
+      where: { role: { role_name: 'USER' } },
+    });
   }
 
   async updateUser(id: number, updatedData: UpdateDto): Promise<void> {
@@ -50,4 +50,3 @@ export class UserRepository extends Repository<User> {
     });
   }
 }
-
