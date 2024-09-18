@@ -142,6 +142,7 @@ export class AuthService {
             email: user.email,
             accessToken,
             role: user.role.role_name,
+            refreshToken,
           },
         };
       } catch (error) {

@@ -18,20 +18,25 @@ export interface UsersListResponse extends BaseResponse {
   users: User[];
 }
 
-export interface UserWithToken {
-  id: number;
-  username: string;
-  email: string;
-  accessToken: string;
-  role: string;
-}
-
 export interface LoginUserResponse extends BaseResponse {
-  user: UserWithToken;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    accessToken: string;
+    role: string;
+    refreshToken: string;
+  };
 }
 
 export interface GenerateTokenResponse extends BaseResponse {
-  user: UserWithToken;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    accessToken: string;
+    role: string;
+  };
 }
 
 declare global {
