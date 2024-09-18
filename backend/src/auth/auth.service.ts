@@ -9,11 +9,8 @@ import {
   LoginUserResponse,
   UserResponse,
 } from '../utils/interfaces/types';
-import { InjectRepository } from '@nestjs/typeorm';
 import { statusCodes } from '../utils/statusCodes/statusCodes';
-import { UserRepository } from 'src/users/repository/users.repository';
 import { LoginDto } from './dto/login.dto';
-import { RoleRepository } from 'src/users/repository/role.repository';
 import { SignupDto } from './dto/signup.dto';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
