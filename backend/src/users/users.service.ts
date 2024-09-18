@@ -16,9 +16,9 @@ import { UpdateDto } from './dto/update.dto';
 export class UsersService {
   constructor(
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    public readonly userRepository: UserRepository,
     @InjectRepository(RoleRepository)
-    private roleRepository: RoleRepository,
+    public readonly roleRepository: RoleRepository,
   ) {}
 
   // GET USER BY ID

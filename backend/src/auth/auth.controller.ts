@@ -36,6 +36,8 @@ export class AuthController {
     const userRoleId = +this.configService.get<number>('USER_ROLE');
     return this.authService.createUser(userData, userRoleId);
   }
+
+
   //USER LOGIN
   @Post('/login')
   async login(
@@ -51,4 +53,4 @@ export class AuthController {
   ): Promise<BaseResponse | GenerateTokenResponse | ErrorResponse> {
     return this.authService.refreshAccessToken(refreshTokenDto.refreshToken);
   }
-}
+ }
