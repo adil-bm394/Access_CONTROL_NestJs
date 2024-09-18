@@ -11,7 +11,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { RolesEnum } from '../utils/enums/roles.enum';
 
-@Controller('admin')
+@Controller({ path: 'admin', version: '1' })
 @UseGuards(AuthGuard, RolesGuard)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -34,7 +34,7 @@ export class AdminController {
 
   // DEACTIVATE USER - Admin only
   @Patch('deactivate/:id')
-  @Roles(RolesEnum.Admin) 
+  @Roles(RolesEnum.Admin)
   deactivateUser(
     @Param('id') userId: number,
   ): Promise<BaseResponse | ErrorResponse> {

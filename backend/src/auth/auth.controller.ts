@@ -12,7 +12,7 @@ import { SignupDto } from './dto/signup.dto';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
-@Controller('auth')
+@Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -37,7 +37,6 @@ export class AuthController {
     return this.authService.createUser(userData, userRoleId);
   }
 
-
   //USER LOGIN
   @Post('/login')
   async login(
@@ -53,4 +52,4 @@ export class AuthController {
   ): Promise<BaseResponse | GenerateTokenResponse | ErrorResponse> {
     return this.authService.refreshAccessToken(refreshTokenDto.refreshToken);
   }
- }
+}
