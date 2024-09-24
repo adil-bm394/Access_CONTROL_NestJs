@@ -85,7 +85,7 @@ export class AuthController {
         status: statusCodes.OK,
         success: true,
         message: successMessages.RESET_EMAIL,
-        resetToken:token,
+        resetToken: token,
       };
     } catch (error) {
       console.log(`[Auth.Controller] Error in while forget Password: ${error}`);
@@ -105,8 +105,9 @@ export class AuthController {
   }
 
   //verify Email
-  @Get('verify')
-  async verifyEmail(@Query('email') email: string) {
-    return await this.authService.verifyMail(email);
+  @Post('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    console.log('[Auth.Controller] token:', token);
+    return await this.authService.verifyMail(token);
   }
 }

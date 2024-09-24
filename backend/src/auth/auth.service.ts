@@ -304,6 +304,7 @@ export class AuthService {
 
   // VERIFY EMAIL
   async verifyMail(token: string): Promise<BaseResponse | ErrorResponse> {
+    console.log('[Auth.Service] token:', token);
     try {
       const user =
         await this.usersService.userRepository.findUserByVerificationToken(
