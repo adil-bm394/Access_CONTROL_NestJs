@@ -1,4 +1,14 @@
-import { Controller, Get, Body, Param, Req, UseGuards, Patch, Post, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Param,
+  Req,
+  UseGuards,
+  Patch,
+  Post,
+  Delete,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
   BaseResponse,
@@ -8,11 +18,14 @@ import {
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateDto } from './dto/update.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Controller({ path: 'users', version: '1' })
 @UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+  ) {}
 
   // GET USER BY ID
   @Get(':id')

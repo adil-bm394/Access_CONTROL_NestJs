@@ -2,13 +2,17 @@ export const successMessages = {
   USER_REGISTERED: 'Successfully User Registered',
   USER_LOGIN: 'Successfully User Login',
   GET_USER_DETAILS: 'Successfully Fetched User Details',
-  USER_CREATED: 'Successfully User created.',
+  USER_CREATED:
+    'User created successfully, and a verification email has been sent.',
   USER_FETCHED: 'User successfully fetched.',
   USER_UPDATED: 'User successfully updated.',
   USER_DELETED: 'User successfully deleted.',
   USER_DEACTIVATED: 'User has been deactivated successfully.',
   USER_ACTIVATED: 'User has been activated successfully.',
   TOKEN_REFRESHED: 'Access token refreshed successfully',
+  RESET_EMAIL: 'Password reset email sent',
+  PASSWORD_RESET: 'Successfully your password update',
+  EMAIL_VERIFIED_SUCCESSFULLY: 'Email is Successfully Verified',
 };
 
 export const errorMessages = {
@@ -27,4 +31,10 @@ export const errorMessages = {
   DELETE_NOT_ALLOWED: 'You are not allowed to Delete this user',
   ROLE_MISSING: 'User role is missing or invalid',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token or token has expired',
+  GENERATE_TOKEN_MISSING: ' Generate Token is missing',
+  ERROR_SENDING_VERIFICATION_EMAIL: 'Error sending verification email.',
+  ERROR_SENDING_PASSWORD_RESET_EMAIL: 'Error sending password reset email.',
+  EMAIL_ALREADY_VERIFIED: 'Email is Already Verified',
+  INVALID_VERIFICATION_TOKEN: 'Invalid Verification Token',
+  EMAIL_NOT_VERIFIED: 'Email is not Verified',
 };

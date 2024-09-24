@@ -6,10 +6,13 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRepository } from '../users/repository/users.repository';
 import { RoleRepository } from 'src/users/repository/role.repository';
+import { MailModule } from 'src/mail/mail.module';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
     UsersModule,
+    MailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -21,7 +24,7 @@ import { RoleRepository } from 'src/users/repository/role.repository';
       }),
     }),
   ],
-  providers: [AuthService, UserRepository, RoleRepository],
+  providers: [AuthService, UserRepository, RoleRepository, MailService],
   controllers: [AuthController],
   exports: [AuthService, JwtModule],
 })

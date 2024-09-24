@@ -7,6 +7,7 @@ import { RoleRepository } from './repository/role.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -16,7 +17,12 @@ import { AdminController } from './admin.controller';
   ],
 
   controllers: [UsersController, AdminController],
-  providers: [UsersService,AdminService, UserRepository, RoleRepository],
+  providers: [
+    UsersService,
+    AdminService,
+    UserRepository,
+    RoleRepository,
+  ],
   exports: [UsersService, AdminService, UserRepository, RoleRepository],
 })
 export class UsersModule {}

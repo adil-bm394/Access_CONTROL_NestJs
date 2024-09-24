@@ -1,9 +1,10 @@
 import { DataSource, Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { SignupDto } from 'src/auth/dto/signup.dto';
 import { Role } from '../entities/role.entity';
 import { UpdateDto } from '../dto/update.dto';
+import { errorMessages } from 'src/utils/messages/messages';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -19,8 +20,12 @@ export class UserRepository extends Repository<User> {
     return this.findOne({ where: { id } });
   }
 
-  async createUser(userData: SignupDto, role: Role): Promise<User> {
-    const user = this.create({ ...userData, role });
+  async createUser(
+    userData: SignupDto,
+    role: Role,
+    verificationToken: string,
+  ): Promise<User> {
+    const user = this.create({ ...userData, role, verificationToken });
     return this.save(user);
   }
 
@@ -48,5 +53,21 @@ export class UserRepository extends Repository<User> {
       refreshToken,
       refreshTokenExpiresAt: expiresAt,
     });
+  }
+
+  async saveResetToken(user: User, token: string): Promise<void> {
+    user.resetToken = token;
+    user.resetTokenExpiration = new Date(Date.now() + 3600000);
+    await this.save(user);
+  }
+
+  async findUserByResetToken(resetToken: string): Promise<User | null> {
+    return this.findOne({ where: { resetToken } });
+  }
+
+  async findUserByVerificationToken(
+    verificationToken: string,
+  ): Promise<User | null> {
+    return this.findOne({ where: { verificationToken } });
   }
 }

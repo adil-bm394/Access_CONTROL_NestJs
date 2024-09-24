@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { errorMessages, successMessages } from '../utils/messages/messages';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
 import {
   BaseResponse,
   ErrorResponse,
@@ -11,6 +10,7 @@ import { statusCodes } from '../utils/statusCodes/statusCodes';
 import { UserRepository } from './repository/users.repository';
 import { RoleRepository } from './repository/role.repository';
 import { UpdateDto } from './dto/update.dto';
+
 
 @Injectable()
 export class UsersService {

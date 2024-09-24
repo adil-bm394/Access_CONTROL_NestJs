@@ -38,7 +38,9 @@ export interface GenerateTokenResponse extends BaseResponse {
     role: string;
   };
 }
-
+export interface forgetPasswordResponse extends BaseResponse {
+  resetToken: string;
+}
 declare global {
   namespace Express {
     interface Request {
