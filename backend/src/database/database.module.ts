@@ -3,6 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../users/entities/role.entity';
+import { Chat } from '../chat/entity/chat.entity';
+import { Group } from '../chat/entity/group.entity';
+//import { Permission } from '../users/entities/permission.entity';
 
 
 
@@ -21,7 +24,7 @@ import { Role } from '../users/entities/role.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User,Role],
+        entities: [User,Role,Chat,Group],
         synchronize: true,
       }),
     }),

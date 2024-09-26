@@ -7,8 +7,8 @@ import { RoleRepository } from './repository/role.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
-import { MailService } from 'src/mail/mail.service';
 
+import { MailService } from 'src/mail/mail.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserRepository, RoleRepository]),

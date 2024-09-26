@@ -13,6 +13,8 @@ export const successMessages = {
   RESET_EMAIL: 'Password reset email sent',
   PASSWORD_RESET: 'Successfully your password update',
   EMAIL_VERIFIED_SUCCESSFULLY: 'Email is Successfully Verified',
+  CHAT_MESSAGE: 'User Messages has sent ',
+
 };
 
 export const errorMessages = {
@@ -37,4 +39,6 @@ export const errorMessages = {
   EMAIL_ALREADY_VERIFIED: 'Email is Already Verified',
   INVALID_VERIFICATION_TOKEN: 'Invalid Verification Token',
   EMAIL_NOT_VERIFIED: 'Email is not Verified',
+  FAIL_TO_SEND_MSG: 'Failed to send message',
+  MISSING_USERID: 'Missing UserId',
 };

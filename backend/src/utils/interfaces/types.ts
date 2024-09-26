@@ -1,3 +1,4 @@
+import { Chat } from 'src/chat/entity/chat.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export interface BaseResponse {
@@ -41,6 +42,11 @@ export interface GenerateTokenResponse extends BaseResponse {
 export interface forgetPasswordResponse extends BaseResponse {
   resetToken: string;
 }
+
+export interface ChatResponse extends BaseResponse {
+  chat: Chat; 
+}
+
 declare global {
   namespace Express {
     interface Request {

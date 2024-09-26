@@ -18,7 +18,7 @@ import {
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { UpdateDto } from './dto/update.dto';
-import { MailService } from 'src/mail/mail.service';
+
 
 @Controller({ path: 'users', version: '1' })
 @UseGuards(AuthGuard, RolesGuard)
