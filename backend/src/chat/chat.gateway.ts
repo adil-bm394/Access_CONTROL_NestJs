@@ -20,37 +20,61 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { Req, UseGuards } from '@nestjs/common';
 import { WsAuthGuard } from './guards/ws-AuthGuard';
 import { Request } from 'express';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
+@UseGuards(WsAuthGuard)
 @WebSocketGateway({ cors: true, namespace: '/chat', port: 3000 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
+
   @WebSocketServer()
   server: Server;
-  // HANDLE USER CONNECTION AND BROADCAST ONLINE STATUS
-  @UseGuards(WsAuthGuard)
-  async handleConnection(
-    client: Socket,
-    @Req() req: Request,
-  ): Promise<ErrorResponse> {
-    try {
-      //console.log(`[Chat.Gateway] New client connected: ${client.id}`);
-      const userId = client.handshake;
-      console.log('[Chate.Gateway] userId :', userId);
-      // console.log('[Chate.Gateway] client.handshake :', client.handshake);
 
-      if (!userId) {
-        console.log('[ChatGateway] Missing userId, disconnecting client');
-        client.emit('error', { message: errorMessages.MISSING_USERID });
+  private userClientMap = new Map<string, string>();
+
+  // HANDLE USER CONNECTION AND BROADCAST ONLINE STATUS
+  async handleConnection(client: Socket): Promise<ErrorResponse> {
+    try {
+      const token = client.handshake.headers['bearer'].toString();
+      //console.log(`[Chat.Gateway] New client connected: ${client.id}`);
+
+      if (!token) {
+        console.log(
+          '[ChatGateway] Missing token, disconnecting client',
+          client.id,
+        );
+
+        client.emit('error', { message: errorMessages.TOKEN_MISSING });
         client.disconnect();
         return;
       }
 
-      console.log(`[ChatGateway] User connected: ${userId}`);
+      const user = await this.validateToken(token);
+      if (!user) {
+        console.log(
+          '[ChatGateway] Invalid token, disconnecting client',
+          client.id,
+        );
 
-      this.server.emit('userStatus', { userId, status: 'online' });
+        client.emit('error', { message: errorMessages.INVALID_TOKEN });
+        client.disconnect();
+        return;
+      }
+      client.user = user;
+      console.log(`[ChatGateway] User connected: ${user.id}`);
+
+      this.userClientMap.set(user.id.toString(), client.id);
+      console.log(`User ${user.id} connected with client ID ${client.id}`);
+
+      this.server.emit('userStatus', { userId: user.id, status: 'online' });
 
       // Update the user's status in the database
-      await this.chatService.getUserStatus(+userId);
+      await this.chatService.updateUserStatus(+user.id, true);
     } catch (error) {
       console.log('[ChatGateway] Error in handleConnection:', error);
       return {
@@ -65,18 +89,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // HANDLE USER DISCONNECTION AND BROADCAST OFFLINE STATUS
   async handleDisconnect(client: Socket): Promise<ErrorResponse | void> {
     try {
-      const userId = client.handshake.query.userId as string;
+      const token = client.handshake.headers['bearer'].toString();
+      //console.log(`[Chat.Gateway] New client connected: ${client.id}`);
 
-      if (!userId) {
-        return; // No need to broadcast if userId is not provided
+      if (!token) {
+        console.log(
+          '[ChatGateway] Missing token, Can not disconnect client',
+          client.id,
+        );
+        return;
       }
+      const user = await this.validateToken(token);
+      if (!user) {
+        console.log(
+          '[ChatGateway] Invalid token, disconnecting client',
+          client.id,
+        );
 
-      console.log(`[ChatGateway] User disconnected: ${userId}`);
+        client.emit('error', { message: errorMessages.INVALID_TOKEN });
+        return;
+      }
+      console.log(`[ChatGateway] User disconnected: ${user.id}`);
 
-      this.server.emit('userStatus', { userId, status: 'offline' });
+      this.userClientMap.delete(user.id);
+      console.log(`User ${user.id} disconnected from client ID ${client.id}`);
 
-      // Update the user's status in the database
-      await this.chatService.getUserStatus(+userId);
+      this.server.emit('userStatus', { userId: user.id, status: 'offline' });
+
+      // // Update the user's status in the database
+      await this.chatService.updateUserStatus(+user.id, false);
     } catch (error) {
       console.log('[ChatGateway] Error in handleDisconnect:', error);
       return {
@@ -89,36 +130,39 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // HANDLE SENDMESSAGE EVENT
+
+  @UseGuards(WsAuthGuard)
   @SubscribeMessage('sendMessage')
   async handleSendMessage(
-    // @ConnectedSocket() client: Socket,
-    @ConnectedSocket() client,
-    @MessageBody() chatData: CreateChatDto,
+    @ConnectedSocket() client: Socket,
+    @MessageBody() userData: CreateChatDto,
   ): Promise<ChatResponse | BaseResponse | ErrorResponse> {
-    const senderId = client.handshake.user._id.toString();
 
-    console.log('[Chat.GateWat] senderId :', senderId);
-    console.log('[ChatGateway] Incoming message data:', chatData);
-
-    // Validate the incoming message data (ensure senderId and message content)
-    // if (!data.senderId || !data.chatData) {
-    //   console.error('[ChatGateway] Invalid message data');
-    //   return {
-    //     status: statusCodes.BAD_REQUEST,
-    //     success: false,
-    //     message: errorMessages.INVALID_CREDENTIAL,
-    //   };
-    // }
+    const senderId = client.user.id;
+    const recipientId = userData.receiverId;
 
     try {
       const chatResponse = await this.chatService.sendMessage(
         senderId,
-        chatData,
+        userData,
       );
 
       // Check if the response contains chat data before emitting
       if ('chat' in chatResponse && chatResponse.success) {
-        this.server.emit('newMessage', chatResponse.chat);
+        console.log('[chat.gateWay] newMessage :', chatResponse.chat);
+        const recipientClientId = this.userClientMap.get(
+          recipientId.toString(),
+        );
+
+        if (recipientClientId) {
+          this.server
+            .to(recipientClientId)
+            .emit('newMessage', chatResponse.chat);
+        } else {
+          console.log(
+            `[ChatGateway] Recipient with ID ${recipientId} is not online.`,
+          );
+        }
         return chatResponse;
       } else {
         console.error(
@@ -139,6 +183,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         message: errorMessages.INTERNAL_SERVER_ERROR,
         error: error.message,
       };
+    }
+  }
+
+  //VALIDATE THE TOKEN
+  private async validateToken(token: string): Promise<any> {
+    try {
+      const secret = this.config.get<string>('JWT_SECRET');
+      const user = await this.jwtService.verify(token, { secret });
+      return user;
+    } catch (error) {
+      console.log(`[Chat.gateWay] error in validate Token: ${error}`);
+      return null;
     }
   }
 }

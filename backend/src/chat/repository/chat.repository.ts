@@ -10,8 +10,8 @@ export class ChatRepository extends Repository<Chat> {
     super(Chat, dataSource.manager);
   }
 
-  async createMessage(chatData: CreateChatDto, sender: User): Promise<Chat> {
-    const chat = this.create({ ...chatData, sender });
+  async createMessage(chatData: CreateChatDto, sender:User,receiver: User): Promise<Chat> {
+    const chat = this.create({ ...chatData, sender,receiver });
     return this.save(chat);
   }
 

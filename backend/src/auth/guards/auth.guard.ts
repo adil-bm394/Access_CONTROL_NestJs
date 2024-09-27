@@ -19,7 +19,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    console.log("OTke")
     const JWT_SECRET = this.config.get<string>('JWT_SECRET');
 
     const request: Request = context.switchToHttp().getRequest();

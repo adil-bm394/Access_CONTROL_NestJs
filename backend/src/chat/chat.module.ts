@@ -38,10 +38,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
     ChatRepository,
     GroupRepository,
     UsersService,
-    {
-      provide:APP_GUARD,
-      useClass:AuthGuard
-    }
   ],
+  exports: [JwtModule],
 })
 export class ChatModule {}

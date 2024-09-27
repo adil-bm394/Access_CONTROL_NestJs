@@ -10,6 +10,7 @@ import {
   BaseResponse,
   ChatResponse,
   ErrorResponse,
+  UserResponse,
 } from 'src/utils/interfaces/types';
 import { statusCodes } from 'src/utils/statusCodes/statusCodes';
 import { errorMessages, successMessages } from 'src/utils/messages/messages';
@@ -26,27 +27,31 @@ export class ChatService {
   // Send message (private or group)
   async sendMessage(
     senderId: number,
-    chatData: CreateChatDto,
+    userData: CreateChatDto,
   ): Promise<ChatResponse | BaseResponse | ErrorResponse> {
-    console.log('[Chat.Service] senderId :', senderId);
-    console.log('[ChatService] Processing message:', chatData);
     try {
-      const user = await this.userService.userRepository.findOne({
-        where: { id: senderId },
-      });
-      if (!user) {
+      const recipient = await this.userService.userRepository.findById(
+        userData.receiverId,
+      );
+      if (!recipient) {
         return {
           status: statusCodes.NOT_FOUND,
           success: false,
           message: errorMessages.USER_NOT_FOUND,
         };
       }
-      const savedChat = await this.chatRepository.createMessage(chatData, user);
+
+      const sender = await this.userService.userRepository.findById(senderId);
+      const savedChat = await this.chatRepository.createMessage(
+        userData,
+        recipient,
+        sender,
+      );
       return {
         status: statusCodes.CREATED,
         success: true,
         message: successMessages.CHAT_MESSAGE,
-        chat: savedChat,
+        chat: userData.message,
       };
     } catch (error) {
       console.error(
@@ -122,11 +127,39 @@ export class ChatService {
     }
   }
 
-  // Get User Online Status
-  async getUserStatus(userId: number): Promise<string> {
-    const user = await this.userService.userRepository.findOne({
-      where: { id: userId },
-    });
-    return user && user.isOnline ? 'online' : 'offline';
+  // Update User Status Online | Ofline
+  async updateUserStatus(
+    userId: number,
+    status: boolean,
+  ): Promise<string | BaseResponse | ErrorResponse | UserResponse> {
+    try {
+      const user = await this.userService.userRepository.findById(userId);
+      if (!user) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: errorMessages.USER_NOT_FOUND,
+        };
+      }
+      user.isOnline = status;
+      await this.userService.userRepository.save(user);
+      user.password = undefined;
+      return {
+        status: statusCodes.OK,
+        success: true,
+        message: successMessages.UPDATE_USER_STATUS,
+        user: user,
+      };
+    } catch (error) {
+      console.log(
+        `[Chat.Service] Error in while updateing user status: ${error}`,
+      );
+      return {
+        status: statusCodes.INTERNAL_SERVER_ERROR,
+        success: false,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
   }
 }

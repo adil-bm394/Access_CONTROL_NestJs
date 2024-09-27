@@ -1,6 +1,6 @@
 import { Chat } from 'src/chat/entity/chat.entity';
 import { User } from 'src/users/entities/user.entity';
-
+import 'socket.io';
 export interface BaseResponse {
   status: number;
   success: boolean;
@@ -44,7 +44,7 @@ export interface forgetPasswordResponse extends BaseResponse {
 }
 
 export interface ChatResponse extends BaseResponse {
-  chat: Chat; 
+  chat: string; 
 }
 
 declare global {
@@ -52,5 +52,16 @@ declare global {
     interface Request {
       user?: User;
     }
+  }
+}
+
+
+
+declare module 'socket.io' {
+  interface Socket {
+    user?: {
+      id: number; 
+      username?: string; 
+    };
   }
 }

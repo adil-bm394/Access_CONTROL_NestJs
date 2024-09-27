@@ -13,11 +13,10 @@ export class WsAuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const JWT_SECRET = this.config.get<string>('JWT_SECRET');
-    console.log(JWT_SECRET, "Fffff")
     const client = context.switchToWs().getClient();
-    // console.log(client, 'ff');
-    const token = this.extractTokenFromHeaders(client.handshake.headers);
-    console.log('[WsAuthGuard] Token:', token);
+
+    const token = client.handshake.headers['bearer'].toString();
+    //console.log('[WsAuthGuard] Token:', token);
 
     if (!token) {
       throw new WsException(errorMessages.TOKEN_MISSING);
@@ -25,17 +24,12 @@ export class WsAuthGuard implements CanActivate {
 
     try {
       const payload = this.jwtService.verify(token, { secret: JWT_SECRET });
-      client.userId = payload.id;
-      // console.log('[WsAuthGuard] Client userId:', client.userId);
+      client.user = payload;
       return true;
     } catch (error) {
       console.error('[WsAuthGuard] Token verification error:', error.message);
       throw new WsException(errorMessages.INVALID_TOKEN);
     }
-  }
-
-  private extractTokenFromHeaders(headers: any): string | null {
-    return headers['authorization']?.split(' ')[1] || null;
   }
 }
 

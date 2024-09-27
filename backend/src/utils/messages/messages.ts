@@ -14,6 +14,7 @@ export const successMessages = {
   PASSWORD_RESET: 'Successfully your password update',
   EMAIL_VERIFIED_SUCCESSFULLY: 'Email is Successfully Verified',
   CHAT_MESSAGE: 'User Messages has sent ',
+  UPDATE_USER_STATUS:'Succesfully User Status has Update'
 
 };
 
