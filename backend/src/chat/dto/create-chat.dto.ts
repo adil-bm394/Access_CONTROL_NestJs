@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, IsInt, ValidateIf, IsNumber } from 'class-validator';
-
 export class CreateChatDto {
   @ValidateIf((o) => !o.receiverId) // Only validate if receiverId is not provided
   @IsNotEmpty()

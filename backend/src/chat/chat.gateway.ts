@@ -143,9 +143,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const groupId = userData.groupId; 
 
     try {
-      // Check if the message is for a group or an individual user
       if (groupId) {
-        // If groupId is present, send a message to the group
         console.log('[ChatGateway] Group Message:', groupId);
 
         // Retrieve group members
@@ -160,13 +158,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           };
         }
 
-        // Save the group message
         const groupMessageResponse = await this.chatService.sendGroupMessage(
           senderId,
           userData,
         );
 
-        // Check if message saved successfully
         if ('chat' in groupMessageResponse && groupMessageResponse.success) {
           console.log(
             '[ChatGateway] Group message sent:',
@@ -199,7 +195,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             success: false,
             message: errorMessages.FAIL_TO_SEND_GROUP_MSG,
           };
-        }
+        } 
       } else {
         // If no groupId, handle as private message
         const chatResponse = await this.chatService.sendMessage(
@@ -238,7 +234,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             '[ChatGateway] Failed to send private message:',
             chatResponse.message,
           );
-          return {
+          return {   
             status: statusCodes.BAD_REQUEST,
             success: false,
             message: errorMessages.FAIL_TO_SEND_MSG,
