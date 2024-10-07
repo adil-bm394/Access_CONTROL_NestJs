@@ -12,6 +12,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AddUserToGroupDto } from './dto/add-user-to-group.dto';
 
 
 @Controller({ path: 'chat', version: '1' })
@@ -27,5 +28,13 @@ export class ChatController {
   @Get('group/:groupId/messages')
   getGroupMessages(@Param('groupId') groupId: number) {
     return this.chatService.getMessagesForGroup(groupId);
+  }
+
+  @Post('group/:groupId/addUsers')
+  async addUserToGroup(
+    @Param('groupId') groupId: number,
+    @Body() userData: AddUserToGroupDto,
+  ) {
+    return await this.chatService.addUserToGroup(userData.userId, groupId);
   }
 }

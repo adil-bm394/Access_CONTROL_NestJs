@@ -32,4 +32,11 @@ export class GroupRepository extends Repository<Group> {
     });
     return group?.users || [];
   }
+
+  async findGroupById(groupId: number): Promise<Group> {
+    return this.findOne({
+      where: { id: groupId },
+      relations: ['users'],
+    });
+  }
 }

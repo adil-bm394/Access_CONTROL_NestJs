@@ -17,6 +17,7 @@ import {
 import { statusCodes } from 'src/utils/statusCodes/statusCodes';
 import { errorMessages, successMessages } from 'src/utils/messages/messages';
 import { UsersService } from 'src/users/users.service';
+import { AddUserToGroupDto } from './dto/add-user-to-group.dto';
 
 @Injectable()
 export class ChatService {
@@ -237,5 +238,36 @@ export class ChatService {
         error: error.message,
       };
     }
+  }
+
+  //Adding  user in Particular Group
+  async addUserToGroup(
+    userId: number,
+    groupId: number,
+  ): Promise<Group | BaseResponse | ErrorResponse> {
+
+    const group = await this.groupRepository.findGroupById(groupId);
+    if (!group) {
+      return {
+        status: statusCodes.NOT_FOUND,
+        success: false,
+        message: errorMessages.GROUP_NOT_FOUND,
+      };
+    }
+    const user = await this.userService.userRepository.findById(userId);
+    if (!user) {
+      return {
+        status: statusCodes.NOT_FOUND,
+        success: false,
+        message: errorMessages.USER_NOT_FOUND,
+      };
+    }
+
+    if (!group.users.some((u) => u.id === userId)) {
+      group.users.push(user);
+      await this.groupRepository.save(group);
+    }
+
+    return group;
   }
 }
