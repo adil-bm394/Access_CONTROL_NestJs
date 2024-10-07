@@ -11,6 +11,7 @@ import {
   ChatResponse,
   CreateGroupResponse,
   ErrorResponse,
+  GroupChatResponse,
   UserResponse,
 } from 'src/utils/interfaces/types';
 import { statusCodes } from 'src/utils/statusCodes/statusCodes';
@@ -25,7 +26,7 @@ export class ChatService {
     private readonly userService: UsersService,
   ) {}
 
-  // Send message (private or group)
+  // Send message (private)
   async sendMessage(
     senderId: number,
     userData: CreateChatDto,
@@ -148,12 +149,28 @@ export class ChatService {
   }
 
   // Get Messages for Group
-  async getMessagesForGroup(groupId: number): Promise<Chat[] | ErrorResponse> {
+  async getMessagesForGroup(
+    groupId: number,
+  ): Promise<GroupChatResponse | BaseResponse | ErrorResponse> {
     try {
-      return await this.chatRepository.getMessagesForGroup(groupId);
+      const group = await this.chatRepository.getMessagesForGroup(groupId);
+      if (!group) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: errorMessages.GROUP_NOT_FOUND,
+        };
+      }
+
+      return {
+        status: statusCodes.OK,
+        success: true,
+        message: successMessages.FETCH_GROUP_MESSAGE,
+        chat: group,
+      };
     } catch (error) {
-      console.error(
-        `[Chat.Service] Error fetching group messages: ${error.message}`,
+      console.log(
+        `[Chat.Service] Error fetching group messages for groupId ${groupId}:`,
         error,
       );
       return {

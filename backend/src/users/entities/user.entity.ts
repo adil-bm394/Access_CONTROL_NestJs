@@ -23,6 +23,7 @@ export class User {
   @Column({ unique: true, type: 'varchar', length: 255, nullable: false })
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar', length: 60, nullable: false })
   password: string;
 
@@ -92,107 +93,6 @@ export class User {
     Object.assign(this, partial);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import {
 //   Column,

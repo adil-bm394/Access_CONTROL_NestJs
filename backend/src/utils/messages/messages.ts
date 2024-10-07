@@ -15,7 +15,9 @@ export const successMessages = {
   EMAIL_VERIFIED_SUCCESSFULLY: 'Email is Successfully Verified',
   CHAT_MESSAGE: 'User Messages has sent ',
   UPDATE_USER_STATUS:'Succesfully User Status has Update',
-  GROUP_CREATED:'Successfully Group Created'
+  GROUP_CREATED:'Successfully Group Created',
+  FETCH_GROUP_MESSAGE:'Successfully fetched Group Message'
+
 
 };
 
@@ -43,8 +45,8 @@ export const errorMessages = {
   EMAIL_NOT_VERIFIED: 'Email is not Verified',
   FAIL_TO_SEND_MSG: 'Failed to send message',
   MISSING_USERID: 'Missing UserId',
-  MISSING_TOKEN:'Token is Missing',
+  MISSING_TOKEN: 'Token is Missing',
   FAIL_TO_SEND_GROUP_MSG: 'Failed to Send Messages in Group',
   GROUP_NOT_FOUND_OR_NO_MEMBERS: 'Group Not Found Or No Member',
-  GROUP_NOT_FOUND:'Group Not Found',
+  GROUP_NOT_FOUND: 'Group Not Found',
 };

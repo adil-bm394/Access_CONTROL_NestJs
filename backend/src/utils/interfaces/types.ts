@@ -45,16 +45,19 @@ export interface forgetPasswordResponse extends BaseResponse {
 }
 
 export interface ChatResponse extends BaseResponse {
-   chat:{
-     id: number;
-     message:string;
-     senderName:string;
-   }
-  
+  chat: {
+    id: number;
+    message: string;
+    senderName: string;
+  };
+}
+
+export interface GroupChatResponse extends BaseResponse {
+  chat: Chat[];
 }
 
 export interface CreateGroupResponse extends BaseResponse {
-  group:Group
+  group: Group;
 }
 
 declare global {
@@ -65,13 +68,11 @@ declare global {
   }
 }
 
-
-
 declare module 'socket.io' {
   interface Socket {
     user?: {
-      id: number; 
-      username?: string; 
+      id: number;
+      username?: string;
     };
   }
 }

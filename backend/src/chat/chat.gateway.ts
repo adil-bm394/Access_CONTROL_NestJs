@@ -142,8 +142,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const recipientId = userData.receiverId;
     const groupId = userData.groupId; 
 
-    console.log('[ChatGateway] Group ID:', groupId);
-
     try {
       if (groupId) {
         // Retrieve group members
