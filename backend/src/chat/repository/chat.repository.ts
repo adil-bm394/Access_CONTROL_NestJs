@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Chat } from '../entity/chat.entity';
 import { CreateChatDto } from '../dto/create-chat.dto';
 import { User } from 'src/users/entities/user.entity';
+import { Group } from '../entity/group.entity';
 
 @Injectable()
 export class ChatRepository extends Repository<Chat> {
@@ -10,8 +11,12 @@ export class ChatRepository extends Repository<Chat> {
     super(Chat, dataSource.manager);
   }
 
-  async createMessage(chatData: CreateChatDto, sender:User,receiver: User): Promise<Chat> {
-    const chat = this.create({ ...chatData, sender,receiver });
+  async createMessage(
+    chatData: CreateChatDto,
+    sender: User,
+    receiver: User,
+  ): Promise<Chat> {
+    const chat = this.create({ ...chatData, sender, receiver });
     return this.save(chat);
   }
 
@@ -25,5 +30,20 @@ export class ChatRepository extends Repository<Chat> {
 
   async updateMessageStatus(id: number, status: string): Promise<void> {
     await this.update(id, { status });
+  }
+
+  async createGroupMessage(
+    userData: CreateChatDto,
+    group: Group,
+    sender: User,
+  ): Promise<Chat> {
+    const newChat = this.create({
+      message: userData.message,
+      group: group,
+      sender: sender,
+      isGroupMessage: true,
+      status: 'sent',
+    });
+    return await this.save(newChat);
   }
 }

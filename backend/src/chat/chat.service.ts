@@ -9,6 +9,7 @@ import { GroupRepository } from './repository/group.repository';
 import {
   BaseResponse,
   ChatResponse,
+  CreateGroupResponse,
   ErrorResponse,
   UserResponse,
 } from 'src/utils/interfaces/types';
@@ -51,7 +52,11 @@ export class ChatService {
         status: statusCodes.CREATED,
         success: true,
         message: successMessages.CHAT_MESSAGE,
-        chat: userData.message,
+        chat: {
+          id: savedChat.id,
+          message: userData.message,
+          senderName: sender.username,
+        },
       };
     } catch (error) {
       console.error(
@@ -67,13 +72,67 @@ export class ChatService {
     }
   }
 
+  //SEND MESSAGE IN GROUP
+  async sendGroupMessage(
+    senderId: number,
+    userData: CreateChatDto,
+  ): Promise<ChatResponse | BaseResponse | ErrorResponse> {
+    try {
+      const group = await this.groupRepository.findById(userData.groupId);
+
+      if (!group) {
+        return {
+          status: statusCodes.NOT_FOUND,
+          success: false,
+          message: errorMessages.GROUP_NOT_FOUND,
+        };
+      }
+
+      const sender = await this.userService.userRepository.findById(senderId);
+
+      // Save the message to the group
+      const savedGroupChat = await this.chatRepository.createGroupMessage(
+        userData,
+        group,
+        sender,
+      );
+
+      return {
+        status: statusCodes.CREATED,
+        success: true,
+        message: successMessages.GROUP_CREATED,
+        chat: {
+          id: savedGroupChat.id,
+          message: userData.message,
+          senderName: sender.username,
+        },
+      };
+    } catch (error) {
+      console.error(
+        `[Chat.Service] Error Sending group message: ${error.message}`,
+        error,
+      );
+      return {
+        status: statusCodes.INTERNAL_SERVER_ERROR,
+        success: false,
+        message: errorMessages.INTERNAL_SERVER_ERROR,
+        error: error.message,
+      };
+    }
+  }
+
   // Create Group
   async createGroup(
     createGroupDto: CreateGroupDto,
-  ): Promise<Group | ErrorResponse> {
+  ): Promise<CreateGroupResponse | ErrorResponse | BaseResponse> {
     try {
-      const group = await this.groupRepository.createGroup(createGroupDto);
-      return group;
+      const savedGroup = await this.groupRepository.createGroup(createGroupDto);
+      return {
+        status: statusCodes.CREATED,
+        success: true,
+        message: successMessages.GROUP_CREATED,
+        group: savedGroup,
+      };
     } catch (error) {
       console.error(
         `[Chat.Service] Error Creating Group: ${error.message}`,

@@ -22,37 +22,39 @@ import { WsAuthGuard } from './guards/ws-AuthGuard';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { GroupRepository } from './repository/group.repository';
 
 @UseGuards(WsAuthGuard)
-@WebSocketGateway({ cors: true, namespace: '/chat', port: 3000 })
+@WebSocketGateway({ cors: true, namespace: 'api/v1/chat', port: 3000 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly chatService: ChatService,
+    private readonly groupRepository: GroupRepository,
     private jwtService: JwtService,
-    private config: ConfigService,
+    private config: ConfigService,    
   ) {}
 
   @WebSocketServer()
-  server: Server;
+  server: Server;  
 
   private userClientMap = new Map<string, string>();
 
   // HANDLE USER CONNECTION AND BROADCAST ONLINE STATUS
   async handleConnection(client: Socket): Promise<ErrorResponse> {
     try {
-      const token = client.handshake.headers['bearer'].toString();
-      //console.log(`[Chat.Gateway] New client connected: ${client.id}`);
+      const bearerHeader = client.handshake.headers['bearer'];
 
-      if (!token) {
+      if (!bearerHeader) {
         console.log(
           '[ChatGateway] Missing token, disconnecting client',
           client.id,
         );
-
-        client.emit('error', { message: errorMessages.TOKEN_MISSING });
+        client.emit('error', { message: errorMessages.MISSING_TOKEN });
         client.disconnect();
         return;
       }
+
+      const token = bearerHeader.toString();
 
       const user = await this.validateToken(token);
       if (!user) {
@@ -130,50 +132,118 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // HANDLE SENDMESSAGE EVENT
-
   @UseGuards(WsAuthGuard)
   @SubscribeMessage('sendMessage')
   async handleSendMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() userData: CreateChatDto,
   ): Promise<ChatResponse | BaseResponse | ErrorResponse> {
-
     const senderId = client.user.id;
     const recipientId = userData.receiverId;
+    const groupId = userData.groupId; 
 
     try {
-      const chatResponse = await this.chatService.sendMessage(
-        senderId,
-        userData,
-      );
+      // Check if the message is for a group or an individual user
+      if (groupId) {
+        // If groupId is present, send a message to the group
+        console.log('[ChatGateway] Group Message:', groupId);
 
-      // Check if the response contains chat data before emitting
-      if ('chat' in chatResponse && chatResponse.success) {
-        console.log('[chat.gateWay] newMessage :', chatResponse.chat);
-        const recipientClientId = this.userClientMap.get(
-          recipientId.toString(),
-        );
+        // Retrieve group members
+        const groupMembers =
+          await this.groupRepository.getGroupMembers(groupId);
 
-        if (recipientClientId) {
-          this.server
-            .to(recipientClientId)
-            .emit('newMessage', chatResponse.chat);
-        } else {
-          console.log(
-            `[ChatGateway] Recipient with ID ${recipientId} is not online.`,
-          );
+        if (!groupMembers || groupMembers.length === 0) {
+          return {
+            status: statusCodes.NOT_FOUND,
+            success: false,
+            message: errorMessages.GROUP_NOT_FOUND_OR_NO_MEMBERS,
+          };
         }
-        return chatResponse;
-      } else {
-        console.error(
-          '[ChatGateway] Failed to send message:',
-          chatResponse.message,
+
+        // Save the group message
+        const groupMessageResponse = await this.chatService.sendGroupMessage(
+          senderId,
+          userData,
         );
-        return {
-          status: statusCodes.BAD_REQUEST,
-          success: false,
-          message: errorMessages.FAIL_TO_SEND_MSG,
-        };
+
+        // Check if message saved successfully
+        if ('chat' in groupMessageResponse && groupMessageResponse.success) {
+          console.log(
+            '[ChatGateway] Group message sent:',
+            groupMessageResponse.chat,
+          );
+
+          // Send the message to all group members
+          for (const member of groupMembers) {
+            const memberClientId = this.userClientMap.get(member.id.toString());
+
+            if (memberClientId) {
+              this.server.to(memberClientId).emit('newGroupMessage', {
+                groupId: groupId,
+                senderName: groupMessageResponse.chat.senderName,
+                message: groupMessageResponse.chat.message,
+              });
+            } else {
+              console.log(`[ChatGateway] Member ${member.id} is not online.`);
+            }
+          }
+
+          return groupMessageResponse;
+        } else {
+          console.error(
+            '[ChatGateway] Failed to send group message:',
+            groupMessageResponse.message,
+          );
+          return {
+            status: statusCodes.BAD_REQUEST,
+            success: false,
+            message: errorMessages.FAIL_TO_SEND_GROUP_MSG,
+          };
+        }
+      } else {
+        // If no groupId, handle as private message
+        const chatResponse = await this.chatService.sendMessage(
+          senderId,
+          userData,
+        );
+
+        if ('chat' in chatResponse && chatResponse.success) {
+          console.log('[ChatGateway] Private message sent:', chatResponse.chat);
+
+          const recipientClientId = this.userClientMap.get(
+            recipientId.toString(),
+          );
+
+          if (recipientClientId) {
+            this.server
+              .to(recipientClientId)
+              .emit(
+                'newMessage',
+                chatResponse.chat.senderName,
+                chatResponse.chat.message,
+              );
+            await this.chatService.updateMessageStatus(
+              chatResponse.chat.id,
+              'received',
+            );
+          } else {
+            console.log(
+              `[ChatGateway] Recipient with ID ${recipientId} is not online.`,
+            );
+          }
+
+          return chatResponse;
+        } else {
+          console.error(
+            '[ChatGateway] Failed to send private message:',
+            chatResponse.message,
+          );
+          return {
+            status: statusCodes.BAD_REQUEST,
+            success: false,
+            message: errorMessages.FAIL_TO_SEND_MSG,
+          };
+        }
       }
     } catch (error) {
       console.error('[ChatGateway] Error in handleSendMessage:', error);

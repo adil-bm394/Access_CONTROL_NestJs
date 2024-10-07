@@ -107,7 +107,6 @@ export class AuthController {
   //verify Email
   @Post('verify-email')
   async verifyEmail(@Query('token') token: string) {
-    console.log('[Auth.Controller] token:', token);
     return await this.authService.verifyMail(token);
   }
 }

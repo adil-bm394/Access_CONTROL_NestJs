@@ -1,15 +1,19 @@
-import { IsNotEmpty, IsOptional, IsString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, ValidateIf, IsNumber } from 'class-validator';
 
 export class CreateChatDto {
-  @IsOptional()
-  @IsInt()
-  readonly groupId?: number;
-
-  @IsNotEmpty({ message: 'Message cannot be empty' })
-  @IsString()
-  readonly message: string;
-
+  @ValidateIf((o) => !o.receiverId) // Only validate if receiverId is not provided
   @IsNotEmpty()
   @IsInt()
-  readonly receiverId: number;
+  @IsNumber()
+  readonly groupId?: number;
+
+  @ValidateIf((o) => !o.groupId) // Only validate if groupId is not provided
+  @IsNotEmpty()
+  @IsInt()
+  @IsNumber()
+  readonly receiverId?: number;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly message: string;
 }

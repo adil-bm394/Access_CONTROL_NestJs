@@ -1,6 +1,7 @@
 import { Chat } from 'src/chat/entity/chat.entity';
 import { User } from 'src/users/entities/user.entity';
 import 'socket.io';
+import { Group } from 'src/chat/entity/group.entity';
 export interface BaseResponse {
   status: number;
   success: boolean;
@@ -44,7 +45,16 @@ export interface forgetPasswordResponse extends BaseResponse {
 }
 
 export interface ChatResponse extends BaseResponse {
-  chat: string; 
+   chat:{
+     id: number;
+     message:string;
+     senderName:string;
+   }
+  
+}
+
+export interface CreateGroupResponse extends BaseResponse {
+  group:Group
 }
 
 declare global {
