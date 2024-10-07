@@ -142,13 +142,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const recipientId = userData.receiverId;
     const groupId = userData.groupId; 
 
+    console.log('[ChatGateway] Group ID:', groupId);
+
     try {
       if (groupId) {
-        console.log('[ChatGateway] Group Message:', groupId);
-
         // Retrieve group members
         const groupMembers =
           await this.groupRepository.getGroupMembers(groupId);
+          console.log('[ChatGateway] Group Members:', groupMembers);
 
         if (!groupMembers || groupMembers.length === 0) {
           return {
@@ -156,7 +157,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             success: false,
             message: errorMessages.GROUP_NOT_FOUND_OR_NO_MEMBERS,
           };
-        }
+        } 
 
         const groupMessageResponse = await this.chatService.sendGroupMessage(
           senderId,
